@@ -2,6 +2,7 @@ import {
   Link,
   Links,
   Meta,
+  NavLink,
   Outlet,
   Scripts,
   ScrollRestoration,
@@ -9,6 +10,13 @@ import {
 import type { MetaFunction } from "@remix-run/node";
 import { LinksFunction } from "@remix-run/node";
 import styles from "~/tailwind.css?url";
+import {
+  DiscoverIcon,
+  HomeIcon,
+  RecipeBookIcon,
+  SettingsIcon,
+} from "./components/icons";
+import classNames from "classnames";
 
 export const links: LinksFunction = () => {
   return [{ rel: "stylesheet", href: styles }];
@@ -30,7 +38,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Meta />
         <Links />
       </head>
-      <body>
+      <body className="md:flex md:h-screen">
         {children}
         <ScrollRestoration />
         <Scripts />
@@ -42,13 +50,51 @@ export function Layout({ children }: { children: React.ReactNode }) {
 export default function App() {
   return (
     <>
-      <nav>
-        <Link to={"/"}>Home</Link>
-        <Link to={"discover"}>Discover</Link>
-        <Link to={"app"}>App</Link>
-        <Link to={"settings"}>Settings</Link>
-        <Outlet />
+      <nav className="bg-primary text-white">
+        <ul className="flex md:flex-col">
+          <AppNavLink to={"/"}>
+            <HomeIcon />
+          </AppNavLink>
+          <AppNavLink to={"discover"}>
+            <DiscoverIcon />
+          </AppNavLink>
+          <AppNavLink to={"app"}>
+            <RecipeBookIcon />
+          </AppNavLink>
+          <AppNavLink to={"settings"}>
+            <SettingsIcon />
+          </AppNavLink>
+          <div className="p-4">
+            <Outlet />
+          </div>
+        </ul>
       </nav>
     </>
+  );
+}
+
+type AppNavLinkProps = {
+  to: string;
+  children: React.ReactNode;
+};
+
+function AppNavLink({ to, children }: AppNavLinkProps) {
+  return (
+    <li className="w-16">
+      <NavLink to={to}>
+        {({ isActive }) => (
+          <div
+            className={classNames(
+              "py-4 flex justify-center hover:bg-primary-light",
+              {
+                "bg-primary-light": isActive,
+              }
+            )}
+          >
+            {children}
+          </div>
+        )}
+      </NavLink>
+    </li>
   );
 }
