@@ -1,7 +1,7 @@
 import {
-  Link,
   Links,
   Meta,
+  NavLink,
   Outlet,
   Scripts,
   ScrollRestoration,
@@ -15,6 +15,7 @@ import {
   RecipeBookIcon,
   SettingsIcon,
 } from "./components/icons";
+import classNames from "classnames";
 
 export const links: LinksFunction = () => {
   return [{ rel: "stylesheet", href: styles }];
@@ -79,11 +80,20 @@ type AppNavLinkProps = {
 function AppNavLink({ to, children }: AppNavLinkProps) {
   return (
     <li className="w-16">
-      <Link to={to}>
-        <div className="py-4 flex justify-center hover:bg-primary-light">
-          {children}
-        </div>
-      </Link>
+      <NavLink to={to}>
+        {({ isActive }) => (
+          <div
+            className={classNames(
+              "py-4 flex justify-center hover:bg-primary-light",
+              {
+                "bg-primary-light": isActive,
+              }
+            )}
+          >
+            {children}
+          </div>
+        )}
+      </NavLink>
     </li>
   );
 }
