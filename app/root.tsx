@@ -64,11 +64,11 @@ export default function App() {
           <AppNavLink to={"settings"}>
             <SettingsIcon />
           </AppNavLink>
-          <div className="p-4">
-            <Outlet />
-          </div>
         </ul>
       </nav>
+      <div className="p-4">
+        <Outlet />
+      </div>
     </>
   );
 }
