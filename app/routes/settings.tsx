@@ -1,7 +1,7 @@
 import { json, Link, Outlet, useLoaderData } from "@remix-run/react";
 
 export const loader = () => {
-  return json({ message: "This message is from the server loader function!" });
+  return json({ message: "Hello! From Settings loader function." });
 };
 
 export default function Settings() {
@@ -10,14 +10,12 @@ export default function Settings() {
     <div style={{ fontFamily: "system-ui, sans-serif", lineHeight: "1.8" }}>
       <h1>Settings</h1>
       <p>This is the Settings page</p>
-
       <nav>
         <Link to="app">App</Link>
         <Link to="profile">Profile</Link>
       </nav>
+      <p>Message: {data.message}</p>
       <Outlet />
-      <br />
-      <p>{data.message}</p>
     </div>
   );
 }
