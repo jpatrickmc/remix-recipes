@@ -5,6 +5,8 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  useNavigation,
+  useResolvedPath,
 } from "@remix-run/react";
 import type { MetaFunction } from "@remix-run/node";
 import { LinksFunction } from "@remix-run/node";
@@ -78,16 +80,21 @@ type AppNavLinkProps = {
 };
 
 function AppNavLink({ to, children }: AppNavLinkProps) {
+  const navigation = useNavigation();
+  const path = useResolvedPath(to);
+
+  const isLoading =
+    navigation.state === "loading" &&
+    navigation.location.pathname === path.pathname;
   return (
     <li className="w-16">
       <NavLink to={to}>
         {({ isActive }) => (
           <div
             className={classNames(
-              "py-4 flex justify-center hover:bg-primary-light",
-              {
-                "bg-primary-light": isActive,
-              }
+              "py-4 text-center hover:bg-primary-light",
+              isActive ? "bg-primary-light" : "",
+              isLoading ? "animate-pulse bg-primary-light" : ""
             )}
           >
             {children}
