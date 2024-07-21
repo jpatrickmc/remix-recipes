@@ -1,4 +1,10 @@
-import { json, Link, Outlet, useLoaderData } from "@remix-run/react";
+import {
+  json,
+  Link,
+  Outlet,
+  useLoaderData,
+  useRouteError,
+} from "@remix-run/react";
 
 export const loader = () => {
   return json({ message: "Hello! From Settings loader function." });
@@ -16,6 +22,25 @@ export default function Settings() {
       </nav>
       <p>Message: {data.message}</p>
       <Outlet />
+    </div>
+  );
+}
+
+export function ErrorBoundary(): JSX.Element {
+  const error = useRouteError();
+
+  if (error instanceof Error) {
+    return (
+      <div className="bg-red-300 border-2 border-red-600 rounded-md p4">
+        <h1>Oops, something went wrong.</h1>
+        <p>{error.message}</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="bg-red-300 border-2 border-red-600 rounded-md p4">
+      An unexpected error occurred.
     </div>
   );
 }

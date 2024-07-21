@@ -11,12 +11,14 @@
     "typecheck": "tsc"
   },
   "dependencies": {
+    "@prisma/client": "^5.17.0",
     "@remix-run/node": "^2.9.1",
     "@remix-run/react": "^2.9.1",
     "@remix-run/serve": "^2.9.1",
     "@remix-run/v1-route-convention": "^0.1.4",
     "classnames": "^2.5.1",
     "isbot": "^4.1.0",
+    "prisma": "^5.17.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
