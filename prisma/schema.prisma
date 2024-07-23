@@ -12,3 +12,34 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model PantryShelf {
+  id String @id @default(cuid())
+  name String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // list of PantryItems that belong to this shelf
+  items PantryItem[]
+}
+
+model PantryItem {
+  id String @id @default(cuid())
+  name String
+
+ // matches the type of id in PantryShelf
+ // this tells us which shelf the item belongs on 
+  shelfId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // this is a foreign key relationship
+  // there is a relation from PantryItem to PantryShelf called shelf and you can find the 
+  // corresponding shelf by looking at the shelfId field in PantryItem and the id field 
+  // in PantryShelf 
+  // onDelete: Cascade means, If a shelf is deleted, all items that belong to that shelf 
+  // will also be deleted
+  shelf PantryShelf @relation(fields: [shelfId], references: [id], onDelete: Cascade)
+}
