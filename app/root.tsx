@@ -59,7 +59,7 @@ export default function App() {
           <AppNavLink to={"discover"}>
             <DiscoverIcon />
           </AppNavLink>
-          <AppNavLink to={"app"}>
+          <AppNavLink to={"app/pantry"}>
             <RecipeBookIcon />
           </AppNavLink>
           <AppNavLink to={"settings"}>
@@ -67,7 +67,7 @@ export default function App() {
           </AppNavLink>
         </ul>
       </nav>
-      <div className="p-4">
+      <div className="p-4 w-full">
         <Outlet />
       </div>
     </>
