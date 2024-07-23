@@ -20,11 +20,7 @@ function getShelves() {
 
 async function seed() {
   await Promise.all(
-    getShelves().map((shelf) => {
-      db.pantryShelf.create({
-        data: shelf,
-      });
-    })
+    getShelves().map((shelf) => db.pantryShelf.create({ data: shelf }))
   );
 }
 
