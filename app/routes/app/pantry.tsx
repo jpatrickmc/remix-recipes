@@ -15,7 +15,7 @@ export default function Pantry() {
       <ul
         className={classNames(
           "flex gap-8 overflow-x-auto",
-          "snap-x snap-mandatory md: snap-none"
+          "snap-x snap-mandatory md:snap-none"
         )}
       >
         {data.shelves.map((shelf) => (
