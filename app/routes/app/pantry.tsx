@@ -24,7 +24,7 @@ export default function Pantry() {
             className={classNames(
               "border-2 border-primary rounded-md p-4 h-fit",
               "w-[calc(100vw-2rem)] flex-none snap-center",
-              "md: w-96"
+              "md:w-96"
             )}
           >
             <h1 className="text-2xl font-extrabold mb-2">{shelf.name}</h1>
