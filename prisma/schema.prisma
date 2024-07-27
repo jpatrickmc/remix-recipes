@@ -29,7 +29,7 @@ model PantryItem {
   name String
 
  // matches the type of id in PantryShelf
- // this tells us which shelf the item belongs on 
+ // this tells us which shelf the item belongs 
   shelfId String
 
   createdAt DateTime @default(now())
