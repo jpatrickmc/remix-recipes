@@ -85,7 +85,8 @@ function AppNavLink({ to, children }: AppNavLinkProps) {
 
   const isLoading =
     navigation.state === "loading" &&
-    navigation.location.pathname === path.pathname;
+    navigation.location.pathname === path.pathname &&
+    navigation.formData === null;
   return (
     <li className="w-16">
       <NavLink to={to}>

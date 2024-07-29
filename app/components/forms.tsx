@@ -4,11 +4,13 @@ import classNames from "classnames";
 type ButtonProps = {
   children: ReactNode;
   className?: string;
+  name?: string;
 };
 
-export function Button({ children, className }: ButtonProps) {
+export function Button({ children, className, ...props }: ButtonProps) {
   return (
     <button
+      {...props}
       className={classNames(
         "flex px-3 p-2 rounded-md justify-center",
         className
