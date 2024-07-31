@@ -10,10 +10,12 @@ import {
   createShelf,
   deleteShelf,
   getAllShelves,
+  saveShelfName,
 } from "./models/pantry-shelf.server";
 import classNames from "classnames";
-import { PlusIcon, SearchIcon } from "~/components/icons";
+import { PlusIcon, SaveIcon, SearchIcon } from "~/components/icons";
 import { DeleteButton, PrimaryButton } from "~/components/forms";
+import { k } from "node_modules/vite/dist/node/types.d-aGj9QkWt";
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const url = new URL(request.url);
@@ -22,6 +24,8 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const shelves = await getAllShelves(q);
   return json({ shelves });
 }
+
+type FieldErrors = { [key: string]: string };
 
 export const action: ActionFunction = async ({ request }) => {
   const formData = await request.formData();
@@ -35,6 +39,35 @@ export const action: ActionFunction = async ({ request }) => {
         return json({ errors: { shelfId: "shelfId must be a string type" } });
       }
       return deleteShelf(shelfId);
+    }
+    case "saveShelfName": {
+      const shelfId = formData.get("shelfId");
+      const shelfName = formData.get("shelfName");
+      const errors: FieldErrors = {};
+      if (
+        typeof shelfId === "string" &&
+        typeof shelfName === "string" &&
+        shelfName.trim() !== ""
+      ) {
+        return saveShelfName(shelfId, shelfName);
+      }
+
+      if (typeof shelfName !== "string") {
+        errors["shelfName"] = "shelfName must be a string type";
+      }
+
+      if (shelfName === "") {
+        errors["shelfName"] = "shelfName cannot be empty";
+      }
+
+      if (typeof shelfId !== "string") {
+        errors["shelfId"] = "shelfId must be a string type";
+      }
+
+      if (shelfId === "") {
+        errors["shelfId"] = "shelfId cannot be empty";
+      }
+      return json({ errors });
     }
     default: {
       return null;
@@ -108,11 +141,14 @@ type ShelfProps = {
 
 function Shelf({ shelf }: ShelfProps) {
   // this allows Form to submit the form without any navigation
-  const deletShelfFetcher = useFetcher();
+  const deleteShelfFetcher = useFetcher();
+
+  // use a fetcher here since saving a shelf won't cause a page transition
+  const saveShelfNameFetcher = useFetcher();
 
   const isDeletingShelf =
-    deletShelfFetcher.formData?.get("_action") === "deleteShelf" &&
-    deletShelfFetcher.formData?.get("shelfId") === shelf.id;
+    deleteShelfFetcher.formData?.get("_action") === "deleteShelf" &&
+    deleteShelfFetcher.formData?.get("shelfId") === shelf.id;
   return (
     <li
       key={shelf.id}
@@ -122,7 +158,24 @@ function Shelf({ shelf }: ShelfProps) {
         "md:w-96"
       )}
     >
-      <h1 className="text-2xl font-extrabold mb-2">{shelf.name}</h1>
+      <saveShelfNameFetcher.Form method="post" className="flex">
+        <input
+          type="text"
+          defaultValue={shelf.name}
+          name="shelfName"
+          placeholder="Shelf Name"
+          autoComplete="off"
+          className={classNames(
+            "text-2xl font-extrabold mb-2 w-full outline-none",
+            "border-b-2 border-b-background focus:border-b-primary"
+          )}
+        />
+        <button name="_action" value="saveShelfName" className="ml-4">
+          <SaveIcon />
+        </button>
+        <input type="hidden" name="shelfId" value={shelf.id} />
+      </saveShelfNameFetcher.Form>
+
       <ul>
         {shelf.items.map((item) => (
           <li key={item.id} className="py-2">
@@ -130,7 +183,7 @@ function Shelf({ shelf }: ShelfProps) {
           </li>
         ))}
       </ul>
-      <deletShelfFetcher.Form method="post" className="pt-8">
+      <deleteShelfFetcher.Form method="post" className="pt-8">
         <input type="hidden" name="shelfId" value={shelf.id} />
         <DeleteButton
           className="w-full"
@@ -140,7 +193,7 @@ function Shelf({ shelf }: ShelfProps) {
         >
           {isDeletingShelf ? "Deleting Shelf" : "Delete Shelf"}
         </DeleteButton>
-      </deletShelfFetcher.Form>
+      </deleteShelfFetcher.Form>
     </li>
   );
 }

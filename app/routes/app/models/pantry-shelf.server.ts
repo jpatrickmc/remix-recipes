@@ -47,3 +47,24 @@ export async function deleteShelf(shelfId: string) {
     throw error;
   }
 }
+
+export async function saveShelfName(shelfId: string, shelfName: string) {
+  try {
+    const updatedShelf = await db.pantryShelf.update({
+      where: {
+        id: shelfId,
+      },
+      data: {
+        name: shelfName,
+      },
+    });
+    return updatedShelf;
+  } catch (error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      if (error.code === "P2025") {
+        return error.message;
+      }
+    }
+    throw error;
+  }
+}
