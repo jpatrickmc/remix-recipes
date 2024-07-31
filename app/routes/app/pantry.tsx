@@ -15,7 +15,6 @@ import {
 import classNames from "classnames";
 import { PlusIcon, SaveIcon, SearchIcon } from "~/components/icons";
 import { DeleteButton, PrimaryButton } from "~/components/forms";
-import { k } from "node_modules/vite/dist/node/types.d-aGj9QkWt";
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const url = new URL(request.url);
