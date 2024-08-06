@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect } from "react";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 import { useMatches } from "@remix-run/react";
 
 export function classNames(...names: Array<string | undefined>) {
@@ -26,3 +26,18 @@ export function isRunningOnServer() {
 export const useServerLayoutEffect = isRunningOnServer()
   ? useEffect
   : useLayoutEffect;
+
+// react useEffect does not run on the server render
+// if the effect runs, we know the component is hydrated and running
+// on the client
+let hasHydrated = false;
+export function useIsHydrated() {
+  const [isHydrated, setIsHydrated] = useState(hasHydrated);
+
+  useEffect(() => {
+    hasHydrated = true;
+    setIsHydrated(true);
+  }, []);
+
+  return isHydrated;
+}

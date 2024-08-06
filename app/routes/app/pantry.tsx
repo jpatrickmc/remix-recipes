@@ -19,7 +19,7 @@ import { z } from "zod";
 import { validateForm } from "../utils/validation";
 import { createShelfItem, deleteShelfItem } from "./models/pantry-item.server";
 import { useRef, useState } from "react";
-import { useServerLayoutEffect } from "../utils/misc";
+import { useIsHydrated, useServerLayoutEffect } from "../utils/misc";
 import { c } from "node_modules/vite/dist/node/types.d-aGj9QkWt";
 
 export async function loader({ request }: LoaderFunctionArgs) {
@@ -167,6 +167,7 @@ function Shelf({ shelf }: ShelfProps) {
     shelf.items,
     createShelfItemFetcher.state
   );
+  const isHydrated = useIsHydrated();
   const isDeletingShelf =
     deleteShelfFetcher.formData?.get("_action") === "deleteShelf" &&
     deleteShelfFetcher.formData?.get("shelfId") === shelf.id;
@@ -181,9 +182,10 @@ function Shelf({ shelf }: ShelfProps) {
       )}
     >
       <saveShelfNameFetcher.Form method="post" className="flex">
-        <div className="w-full mb-2">
+        <div className="w-full mb-2 peer">
           <input
             type="text"
+            required
             defaultValue={shelf.name}
             name="shelfName"
             placeholder="Shelf Name"
@@ -195,14 +197,34 @@ function Shelf({ shelf }: ShelfProps) {
                 ? "border-b-red-600"
                 : ""
             )}
+            onChange={(e) =>
+              e.target.value !== "" &&
+              saveShelfNameFetcher.submit(
+                {
+                  shelfName: e.target.value,
+                  shelfId: shelf.id,
+                  _action: "saveShelfName",
+                },
+                { method: "post" }
+              )
+            }
           />
           <ErrorMessage>
             {saveShelfNameFetcher.data?.errors?.shelfName}
           </ErrorMessage>
         </div>
-        <button name="_action" value="saveShelfName" className="ml-4">
-          <SaveIcon />
-        </button>
+        {isHydrated ? null : (
+          <button
+            name="_action"
+            value="saveShelfName"
+            className={classNames(
+              "ml-4 opacity-0 hover:opacity-100 focus:opacity-100",
+              "peer-focus-within:opacity-100"
+            )}
+          >
+            <SaveIcon />
+          </button>
+        )}
         <input type="hidden" name="shelfId" value={shelf.id} />
         <ErrorMessage className="pl-2">
           {saveShelfNameFetcher.data?.errors?.shelId}
@@ -233,9 +255,10 @@ function Shelf({ shelf }: ShelfProps) {
           createItemFormRef.current?.reset();
         }}
       >
-        <div className="w-full mb-2">
+        <div className="w-full mb-2 peer">
           <input
             type="text"
+            required
             name="itemName"
             placeholder="New Item"
             autoComplete="off"
@@ -251,7 +274,14 @@ function Shelf({ shelf }: ShelfProps) {
             {createShelfItemFetcher.data?.errors?.itemName}
           </ErrorMessage>
         </div>
-        <button name="_action" value="createShelfItem" className="ml-4">
+        <button
+          name="_action"
+          value="createShelfItem"
+          className={classNames(
+            "ml-4 opacity-0 hover:opacity-100 focus:opacity-100",
+            "peer-focus-within:opacity-100"
+          )}
+        >
           <SaveIcon />
         </button>
         <input type="hidden" name="shelfId" value={shelf.id} />
@@ -265,7 +295,15 @@ function Shelf({ shelf }: ShelfProps) {
           <ShelfItem key={item.id} shelfItem={item} />
         ))}
       </ul>
-      <deleteShelfFetcher.Form method="post" className="pt-8">
+      <deleteShelfFetcher.Form
+        method="post"
+        className="pt-8"
+        onSubmit={(e) => {
+          if (!confirm("Are you sure you want to delete this shelf?")) {
+            e.preventDefault();
+          }
+        }}
+      >
         <input type="hidden" name="shelfId" value={shelf.id} />
         <ErrorMessage className="pb-2">
           {deleteShelfFetcher.data?.errors?.shelfId}
