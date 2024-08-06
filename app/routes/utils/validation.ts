@@ -1,26 +1,41 @@
-import { z } from "zod";
+import type { ZodTypeDef, z } from "zod";
 
-type FieldErrors = Record<string, string>;
+type FieldErrors = { [key: string]: string };
 
-export function validateForm<T>(
-  formData: FormData,
-  zodSchema: z.Schema<T>,
-  successFn: (data: T) => unknown,
-  errorFn: (errors: FieldErrors) => unknown
-) {
-  const result = zodSchema.safeParse({
-    shelfId: formData.get("shelfId"),
-    shelfName: formData.get("shelfName"),
+type FormFields = {
+  [key: string]: FormDataEntryValue | FormDataEntryValue[];
+};
+
+function objectify(formData: FormData) {
+  const formFields: FormFields = {};
+
+  formData.forEach((value, name) => {
+    const isArrayField = name.endsWith("[]");
+    const fieldName = isArrayField ? name.slice(0, -2) : name;
+
+    if (!(fieldName in formFields)) {
+      formFields[fieldName] = isArrayField ? formData.getAll(name) : value;
+    }
   });
 
+  return formFields;
+}
+
+export function validateForm<Input, Output, R, E>(
+  formData: FormData,
+  zodSchema: z.Schema<Output, ZodTypeDef, Input>,
+  successFn: (data: Output) => R,
+  errorFn: (errors: FieldErrors) => E
+) {
+  const fields = objectify(formData);
+  const result = zodSchema.safeParse(fields);
   if (!result.success) {
     const errors: FieldErrors = {};
-    result.error.errors.forEach((error) => {
-      const path = error.path.join(".");
-      errors[path] = error.message;
+    result.error.issues.forEach((issue) => {
+      const path = issue.path.join(".");
+      errors[path] = issue.message;
     });
     return errorFn(errors);
   }
-
   return successFn(result.data);
 }
