@@ -20,6 +20,7 @@ import { validateForm } from "../utils/validation";
 import { createShelfItem, deleteShelfItem } from "./models/pantry-item.server";
 import { useRef, useState } from "react";
 import { useServerLayoutEffect } from "../utils/misc";
+import { c } from "node_modules/vite/dist/node/types.d-aGj9QkWt";
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const url = new URL(request.url);
@@ -162,7 +163,10 @@ function Shelf({ shelf }: ShelfProps) {
   const saveShelfNameFetcher = useFetcher();
   const createShelfItemFetcher = useFetcher();
   const createItemFormRef = useRef<HTMLFormElement>(null);
-  const { renderedItems, addItem } = useOptimisticItems(shelf.items);
+  const { renderedItems, addItem } = useOptimisticItems(
+    shelf.items,
+    createShelfItemFetcher.state
+  );
   const isDeletingShelf =
     deleteShelfFetcher.formData?.get("_action") === "deleteShelf" &&
     deleteShelfFetcher.formData?.get("shelfId") === shelf.id;
@@ -305,7 +309,10 @@ type RenderedItem = {
   isOptimistic?: boolean;
 };
 
-function useOptimisticItems(savedItems: Array<RenderedItem>) {
+function useOptimisticItems(
+  savedItems: Array<RenderedItem>,
+  createShelfItemState: "idle" | "submitting" | "loading"
+) {
   const [optimisticItems, setOptimisticItems] = useState<Array<RenderedItem>>(
     []
   );
@@ -316,8 +323,10 @@ function useOptimisticItems(savedItems: Array<RenderedItem>) {
   });
 
   useServerLayoutEffect(() => {
-    setOptimisticItems([]);
-  }, [savedItems]);
+    if (createShelfItemState === "idle") {
+      setOptimisticItems([]);
+    }
+  }, [createShelfItemState]);
 
   const addItem = (name: string) => {
     setOptimisticItems((items) => [
