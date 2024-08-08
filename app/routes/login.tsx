@@ -5,6 +5,12 @@ import { ErrorMessage, PrimaryButton } from "~/components/forms";
 import { validateForm } from "./utils/validation";
 import { useActionData } from "@remix-run/react";
 
+export function headers() {
+  return {
+    "Set-Cookie": "remix-recipes-cookie=mValue",
+  };
+}
+
 const loginSchema = z.object({
   email: z.string().email(),
 });
