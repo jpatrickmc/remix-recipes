@@ -16,6 +16,7 @@ import styles from "~/tailwind.css?url";
 import {
   DiscoverIcon,
   HomeIcon,
+  LoginIcon,
   RecipeBookIcon,
   SettingsIcon,
 } from "./components/icons";
@@ -53,7 +54,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
 export default function App() {
   return (
     <>
-      <nav className="bg-primary text-white">
+      <nav
+        className={classNames(
+          "bg-primary text-white",
+          "flex justify-between md:flex-col"
+        )}
+      >
         <ul className="flex md:flex-col">
           <AppNavLink to={"/"}>
             <HomeIcon />
@@ -66,6 +72,11 @@ export default function App() {
           </AppNavLink>
           <AppNavLink to={"settings"}>
             <SettingsIcon />
+          </AppNavLink>
+        </ul>
+        <ul>
+          <AppNavLink to={"/login"}>
+            <LoginIcon />
           </AppNavLink>
         </ul>
       </nav>
