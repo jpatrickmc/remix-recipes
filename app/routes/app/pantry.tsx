@@ -11,13 +11,16 @@ import {
   deleteShelf,
   getAllShelves,
   saveShelfName,
-} from "./models/pantry-shelf.server";
+} from "../../models/pantry-shelf.server";
 import classNames from "classnames";
 import { PlusIcon, SaveIcon, SearchIcon, TrashIcon } from "~/components/icons";
 import { DeleteButton, ErrorMessage, PrimaryButton } from "~/components/forms";
 import { z } from "zod";
 import { validateForm } from "../utils/validation";
-import { createShelfItem, deleteShelfItem } from "./models/pantry-item.server";
+import {
+  createShelfItem,
+  deleteShelfItem,
+} from "../../models/pantry-item.server";
 import { useRef, useState } from "react";
 import { useIsHydrated, useServerLayoutEffect } from "../utils/misc";
 import { c } from "node_modules/vite/dist/node/types.d-aGj9QkWt";
