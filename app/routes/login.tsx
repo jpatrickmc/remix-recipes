@@ -7,7 +7,7 @@ import { useActionData } from "@remix-run/react";
 
 export function headers() {
   return {
-    "Set-Cookie": "remix-recipes-cookie=mValue",
+    "Set-Cookie": "remix-recipes-cookie=myValue",
   };
 }
 
