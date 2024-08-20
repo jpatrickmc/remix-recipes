@@ -5,6 +5,7 @@ import { ErrorMessage, PrimaryButton } from "~/components/forms";
 import { validateForm } from "./utils/validation";
 import { useActionData } from "@remix-run/react";
 import { getUser } from "~/models/user.server";
+import { userIdCookie } from "~/cookies";
 
 const loginSchema = z.object({
   email: z.string().email(),
@@ -12,7 +13,8 @@ const loginSchema = z.object({
 
 export const loader: ActionFunction = async ({ request }) => {
   const cookieHeader = request.headers.get("cookie");
-  console.log("cookieHeader", cookieHeader);
+  const cookieValue = await userIdCookie.parse(cookieHeader);
+  console.log("cookieValue", cookieValue);
   return json({});
 };
 
@@ -34,7 +36,7 @@ export const action: ActionFunction = async ({ request }) => {
         { user },
         {
           headers: {
-            "Set-Cookie": `remix-recipes__userId=${user.id}; HttpOnly; Secure`,
+            "Set-Cookie": await userIdCookie.serialize(user.id),
           },
         }
       );
