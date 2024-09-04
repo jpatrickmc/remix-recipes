@@ -6,6 +6,7 @@ import { validateForm } from "./utils/validation";
 import { useActionData } from "@remix-run/react";
 import { getUser } from "~/models/user.server";
 import { sessionCookie } from "~/cookies";
+import { commitSession, getSession } from "~/sessions";
 
 const loginSchema = z.object({
   email: z.string().email(),
@@ -13,12 +14,14 @@ const loginSchema = z.object({
 
 export const loader: ActionFunction = async ({ request }) => {
   const cookieHeader = request.headers.get("cookie");
-  const cookieValue = await sessionCookie.parse(cookieHeader);
-  console.log("cookieValue", cookieValue);
+  const session = await getSession(cookieHeader);
+  console.log("Session data: ", session.data);
   return json({});
 };
 
 export const action: ActionFunction = async ({ request }) => {
+  const cookieHeader = request.headers.get("cookie");
+  const session = await getSession(cookieHeader);
   const formdata = await request.formData();
 
   return validateForm(
@@ -32,11 +35,14 @@ export const action: ActionFunction = async ({ request }) => {
           { status: 401 } // Unauthorized
         );
       }
+
+      session.set("userId", user.id);
+
       return json(
         { user },
         {
           headers: {
-            "Set-Cookie": await sessionCookie.serialize({ userId: user.id }),
+            "Set-Cookie": await commitSession(session),
           },
         }
       );
